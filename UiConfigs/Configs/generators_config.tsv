@@ -1,0 +1,13 @@
+panel	type	label	channel	default	width	height	size	value	channel_x	channel_y	default_x	default_y	midi_cc	midi_ch	tooltip
+gen_scenes	button	LINE	gen/scene	0				0							
+gen_scenes	button	NOISE	gen/scene	0				1							
+gen_scenes	button	CIRCLE	gen/scene	0				2							
+gen_scenes	button	SHAPES	gen/scene	0				3							
+gen_scenes	button	SPIRAL	gen/scene	0				4							
+gen_scenes	button	BUBBLES	gen/scene	0				5							
+gen_xy	xypad	SPEED							gen/speed_x	gen/speed_y	0.5	0.5			
+gen_xy	xypad	SCALE							gen/scale_x	gen/scale_y	0.5	0.5			
+gen_knobs	knob	WIDTH	gen/width	0.5			180								
+gen_knobs	knob	SPIN	gen/spin	0.5			180								
+gen_knobs	knob	SIZE	gen/size	0.5			180								
+xfade	slider	XFADE	gen/xfade	0.5											

@@ -1,0 +1,9 @@
+panel	type	label	channel	default	width	height	size	value	channel_x	channel_y	default_x	default_y	row	col	row_flex	col_flex	midi_cc	midi_ch	tooltip
+fxa_knobs_1	knob	BLUR	fx/blur	0.0			120						1	1	1	1			Blur the image
+fxa_knobs_1	knob	ECHO	fx/echo	0.0			120						1	2	1	2			Makes trails from moving parts of the image, more echo = longer trails
+fxa_knobs_1	knob	DELAY	fx/delay/strength	0.0			120						2	1	2	1			Create delayed copies of the image that fade away gradually
+fxa_knobs_2	knob	DISTORT	fx/distort/strength	0.0			120						2	2	2	1			Distorts the image with another pattern
+fxa_knobs_2	knob	SPEED	fx/distort/speed	0.0			120												Controls how fast distortion pattern moves
+fxa_knobs_2	knob	SIZE	fx/distort/size	0.0			120					 							Controls the density of the distort pattern
+fxa_mix	slider	MIX	fx/wetmix	0.0															Global FX mix, all FX strengths are multiplied by this
+fxa_time	vfader	TIME	fx/delay/time	0.5															Increase time between delay's repeated images
