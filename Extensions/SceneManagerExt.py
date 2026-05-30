@@ -17,114 +17,41 @@ class SceneManagerExt:
         storedItems = [
             # Only 'name' is required...
             {'name': 'Scenes', 'default': {}, 'readOnly': False,
-             'property': True, 'dependable': False}
+             'property': False, 'dependable': False}
         ]
 
         self.stored = StorageManager(self, ownerComp, storedItems)
 
-    def _deepupdate(self, d: dict, u: dict) -> dict:
-        """ update a nested dict (d) with another nested dict (u) """
-        for k, v in u.items():
-            if isinstance(v, collections.abc.Mapping):
-                d[k] = self._deepupdate(d.get(k, {}), v)
-            else:
-                d[k] = v
-        return d
-
-    def _del_attr_data(self, scenedata: dict, id: int, attr: str):
-        ''' delete attribute data from fixture <id>, attribute <attr> '''
-
-        #print(f'deleting attr {attr} from {id}')
-        _scene = copy(scenedata)
-        fixture_entry = _scene[id]
-        attr_data = copy(fixture_entry)
-        print(attr_data)
-        attr_data.pop(attr, None)
-        _scene[id] = attr_data
-        return _scene
-
-    def _filter_attr_data(self, scenedata: dict, filter):
-        ''' 
-        delete attribute data from fixture <id>, attribute <attr> 
-
-        scenedata = {
-            <id>: {
-                'FixtureID': <id>,
-                'index': <pointindex>,
-                'attributes': {
-                    <attr>: value (float)
-                }
-            }
-        }
-        filter = {
-            'attributes': <set of named attributes to keep>
-            'fixtures': <set of fixture ids to keep>
-        }
-        first, filter by ids
-        '''
-
-            
-        filter_attrs = filter.get('attributes', None)
-        filter_ids = filter.get('fixtures', None)
-        #print(f'deleting attr {attr} from {id}')
-        sd = copy(scenedata)
-        filtered_scene = {}
-        if filter_ids:
-            # iterate over dict filtered by fixture ids
-            select_ids = {id:data for (id,data) in sd.items() if id in filter_ids}
-            if filter_attrs:
-                for id, data in select_ids.items():
-                    # filter by attribute
-                    data_filtered = copy(data)
-                    attrs = {attr:val for 
-                             (attr, val) in 
-                             data['attributes'].items() if
-                             attr in filter_attrs
-                             }
-                    data_filtered['attributes'] = attrs
-                    filtered_scene[id] = data_filtered
-            else:
-                filtered_scene = select_ids
-
-        return filtered_scene
-
     def LoadScene(self, scene_name, fixture_comps=None, filter=None):
-        scene_data = self.stored['Scenes'].get(scene_name, None)
-        if not scene_data:
+        scene = self.stored['Scenes'].get(scene_name, None)
+        if not scene:
             debug(f'{scene_name} not found')
             return
 
         if not fixture_comps:
             fixture_comps = parent.Project.fetch('FixtureComps')
 
+
         if filter:
-            scene_data = self._filter_attr_data(scene_data, filter)
-
-        print(scene_data)
-
-        return
-        for f in fixture_comps:
-            f.SceneManager.LoadScene(scene_data)
+            for f in fixture_comps:
+                f.SceneManager.LoadScene(scene.filtered(filter))
+        else:
+            for f in fixture_comps:
+                f.SceneManager.LoadScene(scene)
 
     def StoreScene(self, scene_name, fixture_comps=None, merge='merge', filter=None):
 
         if not fixture_comps:
             fixture_comps = parent.Project.fetch('FixtureComps')
         for f in fixture_comps:
+            print(type(f))
 
             scene: Scene = f.opex('Scenes').GetCurrentState(filter=filter)
             stored_scene = self.stored['Scenes'].get(scene_name, None)
             if not stored_scene or merge == 'overwrite':
-                self.stored['Scenes'][scene_name] = Scene(scene_data)
+                self.stored['Scenes'][scene_name] = scene
             else:
-                self.stored['Scenes'][scene_name].update(merge=merge, filter=filter)
-
-
-
-
-
-
-
+                self.stored['Scenes'][scene_name].update(scene, merge=merge, filter=filter)
 
         # def onDestroyTD(self):
             # 	"""
@@ -133,10 +60,27 @@ class SceneManagerExt:
         # 	"""
         # 	debug("onDestroyTD called")
 
-        # def onInitTD(self):
-            # 	"""
-        # 	Called after the extension is fully initialized and attached to the 
-        # 	component. Use this instead of __init__ for tasks that require other
-        # 	components' extensions to be available, or that use promoted members.
-        # 	"""
-        # 	debug("onInitTD called")
+    def _update_scene_objs(self):
+        """ 
+        whenever we change the Scene class, TD complains about the objects
+        no longer being the same type. The nasty workaround is to re-create
+        all the scenes with an up-to-date reference every time we re-initialize
+        """
+        _stored_scenes = copy(self.stored['Scenes'])
+        for name, scene in self.stored['Scenes'].items():
+            s = Scene(scene.data)
+            _stored_scenes[name] = s
+
+        self.stored['Scenes'] = _stored_scenes
+
+    def onInitTD(self):
+        self._update_scene_objs()
+
+
+
+
+
+
+
+
+

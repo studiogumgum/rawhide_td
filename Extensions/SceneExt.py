@@ -12,7 +12,7 @@ class SceneExt:
         self._scene_output = ownerComp.opex('null_scene_output')
 
 
-    def GetCurrentState(self, filter=None):
+    def GetCurrentState(self, filter=None) -> Scene:
         """
         Convert the current fixture attributes state into a dict for storing
         in global scene storage
@@ -27,6 +27,8 @@ class SceneExt:
                     data[key][heading.val] = mod.dat_utils.cast_cell(s[row, heading.col])
             if filter:
                 return Scene(data).filter(filter)
+
+        return Scene(data)
 
     # def onDestroyTD(self):
         # 	"""
