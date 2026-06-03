@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSKER — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  /* ── LOGIN PAGE LAYOUT ───────────────────────────────────── */
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--bg);
+  }
+
+  #login-card {
+    width: 100%;
+    max-width: 360px;
+    padding: 40px 36px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius2);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  #login-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #login-logo {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--text);
+  }
+
+  #login-subtitle {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  #login-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 -36px;
+  }
+
+  #login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .login-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  .login-input {
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px 12px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+  }
+
+  .login-input:focus {
+    border-color: var(--accent);
+    background: var(--bg3);
+  }
+
+  .login-input::placeholder {
+    color: var(--text3);
+  }
+
+  #login-submit {
+    margin-top: 4px;
+    padding: 12px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+
+  #login-submit:hover {
+    background: var(--accent2);
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+
+  #login-submit:active {
+    background: var(--accent);
+  }
+
+  #login-error {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--red);
+    text-align: center;
+    min-height: 16px;
+    display: none;
+  }
+
+  #login-error.visible {
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<div id="login-card">
+  <div id="login-header">
+    <div id="login-logo">BUSKER</div>
+    <div id="login-subtitle">control surface</div>
+  </div>
+
+  <div id="login-divider"></div>
+
+  <div id="login-form">
+    <div class="login-field">
+      <label class="login-label" for="login-pass">passcode</label>
+      <input
+        class="login-input"
+        id="login-pass"
+        type="password"
+        placeholder="enter passcode"
+        autocomplete="current-password"
+        autofocus
+      >
+    </div>
+
+    <div id="login-error">incorrect passcode</div>
+
+    <button id="login-submit">connect</button>
+  </div>
+</div>
+
+<script>
+  // apply theme from TD if available
+  fetch('/theme')
+    .then(r => r.json())
+    .then(theme => {
+      const root = document.documentElement;
+      const vars = {
+        'bg': '--bg', 'bg2': '--bg2', 'bg3': '--bg3', 'bg4': '--bg4',
+        'border': '--border', 'border2': '--border2',
+        'text': '--text', 'text2': '--text2', 'text3': '--text3',
+        'accent': '--accent', 'accent2': '--accent2',
+        'accent_glow': '--accent-glow',
+        'red': '--red',
+        'font_sans': null, 'font_mono': null,
+      };
+      Object.entries(vars).forEach(([key, cssVar]) => {
+        if (!cssVar || theme[key] === undefined) return;
+        root.style.setProperty(cssVar, theme[key]);
+      });
+      if (theme.font_sans) root.style.setProperty('--sans', `'${theme.font_sans}', sans-serif`);
+      if (theme.font_mono) root.style.setProperty('--mono', `'${theme.font_mono}', monospace`);
+    })
+    .catch(() => {});
+
+  const input  = document.getElementById('login-pass');
+  const submit = document.getElementById('login-submit');
+  const error  = document.getElementById('login-error');
+
+  function attemptLogin() {
+    const passcode = input.value;
+    if (!passcode) return;
+
+    error.classList.remove('visible');
+    submit.textContent = 'connecting...';
+    submit.disabled = true;
+
+    fetch('/auth', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ passcode }),
+    })
+      .then(r => {
+        if (r.ok) {
+          // redirect to main UI on success
+          window.location.href = '/';
+        } else {
+          error.classList.add('visible');
+          input.value = '';
+          input.focus();
+          submit.textContent = 'connect';
+          submit.disabled = false;
+        }
+      })
+      .catch(() => {
+        error.textContent = 'connection error';
+        error.classList.add('visible');
+        submit.textContent = 'connect';
+        submit.disabled = false;
+      });
+  }
+
+  submit.addEventListener('click', attemptLogin);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') attemptLogin();
+  });
+</script>
+</body>
+</html>

@@ -1,18 +1,19 @@
 
 from TDStoreTools import StorageManager
-from td import *
 from typing import Union, Optional
+import dat_utils
 
 class FixtureExt:
     """
     FixtureExt description
     """
+
     def __init__(self, ownerComp):
         # The component to which this extension is attached
         self.ownerComp = ownerComp
         self._prog_vals = ownerComp.opex('prog_vals_table')
         self._patch = ownerComp.opex('PatchFixtures/select_patch')
-        self._scenecontrol = opex('Scenes')
+        self._scenecontrol = ownerComp.opex('Scenes')
         self._dmxout = ownerComp.opex('dmxfixture')
         self._attribute_table = ownerComp.opex('fixture_attributes')
         self._attributes_to_dict()
@@ -50,7 +51,7 @@ class FixtureExt:
                 self.set_attr(id, attr, val)
         else:
             # no id given, set all fixtures' attribute
-            for i in range(self._patch.numRows-1):
+            for i in range(self._patch.numRows - 1):
                 fixture_id = self.fixture_ids[i]
                 self.set_attr(fixture_id, attr, val)
 
@@ -75,11 +76,11 @@ class FixtureExt:
 
 
     # def onDestroyTD(self):
-    # 	"""
-    # 	Called when the extension or component is being deleted. Use this
-    # 	instead of __del__ for cleanup tasks.
-    # 	"""
-    # 	debug("onDestroyTD called")
+    #   """
+    #   Called when the extension or component is being deleted. Use this
+    #   instead of __del__ for cleanup tasks.
+    #   """
+    #   debug("onDestroyTD called")
 
 
     def _attributes_to_dict(self):
@@ -89,22 +90,22 @@ class FixtureExt:
         for i in range(1, self._attribute_table.numRows):
             try:
                 k = self._attribute_table[i, key_col].val
-            except AttributeError as e:
+            except AttributeError:
                 print(f'cell {i, key_col} not found')
             self.fixture_attrs[k] = {}
             for c in value_cells:
                 subkey = self._attribute_table[0, c.col].val
-                self.fixture_attrs[k][c.val] = mod.dat_utils.cast_cell(
+                self.fixture_attrs[k][c.val] = dat_utils.cast_cell(
                     self._attribute_table[i, subkey]
                 )
 
     def onInitTD(self):
         self._fixturecount = self._dmxout.numPrims(delayed=True) - 1
-        stored_items = {'name': 'FixtureAttributes', 
-         'default': {}, 
-         'property': True, 
-         'dependable': True, 
-         'readonly': True},
+        stored_items = [{'name': 'FixtureAttributes',
+                        'default': {},
+                         'property': True,
+                         'dependable': True,
+                         'readonly': True}]
         self.stored = StorageManager(self, self.ownerComp, stored_items)
         self.stored['FixtureAttributes'] = self.fixture_attrs
         self.initProgrammer()
