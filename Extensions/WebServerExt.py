@@ -60,7 +60,6 @@ class WebServer:
             parent.WebUI.Info('Web Server shutting down', self._log_source)
             self._server.par.active = False
 
-
     @property
     def Status(self) -> bool:
         return self._server.par.active.eval() == 1
@@ -77,12 +76,7 @@ class WebServer:
         for client in self.Clients:
             self._server.webSocketSendText(client, msg)
 
-
     def Send(self, msg, client):
-        self._server.webSocketSendText(client, msg)
-
-    def _send(self, msg, client):
-        json.dumps({'test': 'test'})
         self._server.webSocketSendText(client, msg)
 
     def RefreshPage(self):

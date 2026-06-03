@@ -15,7 +15,8 @@ def getCellVal(
     cell = t[row, col]
     if t.valid and cell is not None:
         if cast:
-            return cast_cell(cell)
+            v = cast_cell(cell)
+            return v if v else ''
         else:
             return cell.val
     return ''
