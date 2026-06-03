@@ -13,7 +13,7 @@ def getCellVal(
     t: tableDAT, row: Union[str, int], col: Union[str, int], cast=False
 ) -> Optional[Union[str, float, int]]:
     cell = t[row, col]
-    if cell is not None:
+    if t.valid and cell is not None:
         if cast:
             return cast_cell(cell)
         else:
