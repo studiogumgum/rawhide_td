@@ -1,31 +1,37 @@
-from td import *
 from typing import Optional, Union
+
+
 def get_cell_cast(
-    t: td.tableDat,
-    row: Union[int, str], 
-    col: Union[int, str]
+    t: tableDAT, row: Union[int, str], col: Union[int, str]
 ) -> Optional[Union[str, float, int]]:
-    maybe_cell = t[row,col]
+    maybe_cell = t[row, col]
     if maybe_cell:
         return cast_cell(maybe_cell)
 
 
+def getCellVal(
+    t: tableDAT, row: Union[str, int], col: Union[str, int], cast=False
+) -> Optional[Union[str, float, int]]:
+    cell = t[row, col]
+    if cell is not None:
+        if cast:
+            return cast_cell(cell)
+        else:
+            return cell.val
+    return ''
 
 
-
-def cast_cell(cell: td.Cell) -> Optional[Union[str, float, int]]:
-    """ Try to cast cell value to int or float, return string if not possible """
-
-value = cell.val.strip()
-if value == '':
-    return None
-try:
-    int(value)
-    return int(value)
-except ValueError:
+def cast_cell(cell: Cell) -> Optional[Union[str, float, int]]:
+    """Try to cast cell value to int or float, return string if not possible"""
+    value = cell.val.strip()
+    if value == "":
+        return None
     try:
-        float(value)
-        return float(value)
+        int(value)
+        return int(value)
     except ValueError:
-        return value
-
+        try:
+            float(value)
+            return float(value)
+        except ValueError:
+            return value
