@@ -1,0 +1,5 @@
+row	col	row_flex	col_flex	panel	panel_label	direction	max_per
+1	1	2	1	fx_smooth	SMOOTH	row	
+1	2	2	1	fx_delay	DELAY	row	
+2	1	2	3	fx_distort	DISTORT	row	
+3	2	1	1	fx_mix		column	

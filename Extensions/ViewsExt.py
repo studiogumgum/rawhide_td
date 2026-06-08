@@ -1,80 +1,108 @@
 from TDStoreTools import StorageManager
 import TDFunctions as TDF
+from dat_utils import getCellVal
 
 class Views:
-	"""
-	Views description
-	"""
-	def __init__(self, ownerComp):
-		# The component to which this extension is attached
-		self.ownerComp = ownerComp
-		self._view_list = ownerComp.opex('table_views')
+    """
+    Views description
+    """
+    def __init__(self, ownerComp):
+        # The component to which this extension is attached
+        self.ownerComp = ownerComp
+        self._view_list = ownerComp.opex('table_views')
 
-	@property
-	def ViewList(self):
-		return self._view_list
+    @property
+    def ViewList(self):
+        return self._view_list
 
-	def GetView(self, view_name):
-		views = set(self._view_list.col('name', val=True)[1:])
-		if view_name not in views:
-			if self.ownerComp.op(view_name) is None:
-				parent.WebUI.Error(f'View {view_name} not found', source='Views')
-				return None
-			else:
-				return self.ownerComp.opex(view_name)
-		return self.ownerComp.opex(view_name)
+    def GetView(self, view_name):
+        views = set(self._view_list.col('name', val=True)[1:])
+        if view_name not in views:
+            if self.ownerComp.op(view_name) is None:
+                parent.WebUI.Error(f'View {view_name} not found', source='Views')
+                return None
+            else:
+                return self.ownerComp.opex(view_name)
+        return self.ownerComp.opex(view_name)
 
-	def GetViewState(self, view_name):
-		def cell(table, row, col):
-			c = table[row, col]
-			return c.val.strip() if c is not None else None
+    def GetViewState(self, view_name):
+        def cell(table, row, col):
+            c = table[row, col]
+            return c.val.strip() if c is not None else None
 
-		view_comp = self.GetView(view_name)
-		config_table = view_comp.opex('table_config')
-		state = {}
+        view_comp = self.GetView(view_name)
+        config_table = view_comp.opex('table_config')
+        state = {}
 
-		for r in range(1, config_table.numRows):
-			chan = cell(config_table, r, "channel")
-			widget_type = cell(config_table, r, 'type')
+        for r in range(1, config_table.numRows):
+            chan = cell(config_table, r, "channel")
+            widget_type = cell(config_table, r, 'type')
 
-			if widget_type == 'colorpicker' and chan:
-				for suffix in ('r', 'g', 'b'):
-					sub_channel = f'{chan}/{suffix}'
-					cv = parent.WebUI.Controls.GetControlValue(sub_channel)
-					if cv is not None:
-						state[sub_channel] = cv
+            if widget_type == 'colorpicker' and chan:
+                for suffix in ('r', 'g', 'b'):
+                    sub_channel = f'{chan}/{suffix}'
+                    cv = parent.WebUI.Controls.GetControlValue(sub_channel)
+                    if cv is not None:
+                        state[sub_channel] = cv
 
-			elif widget_type == 'xypad' and chan:
-				chan_x = config_table[r, "channel_x"].val
-				chan_y = config_table[r, "channel_y"].val
-				cvx = parent.WebUI.Controls.GetControlValue(chan_x)
-				cvy = parent.WebUI.Controls.GetControlValue(chan_y)
-				if cvx is not None:
-					state[chan_x] = cvx
-				if cvy is not None:
-					state[chan_y] = cvy
+            elif widget_type == 'xypad' and chan:
+                chan_x = config_table[r, "channel_x"].val
+                chan_y = config_table[r, "channel_y"].val
+                cvx = parent.WebUI.Controls.GetControlValue(chan_x)
+                cvy = parent.WebUI.Controls.GetControlValue(chan_y)
+                if cvx is not None:
+                    state[chan_x] = cvx
+                if cvy is not None:
+                    state[chan_y] = cvy
 
-			elif chan:
-				cv = parent.WebUI.Controls.GetControlValue(chan)
-				if cv is not None:
-					state[chan] = cv
+            elif chan:
+                cv = parent.WebUI.Controls.GetControlValue(chan)
+                if cv is not None:
+                    state[chan] = cv
 
-		return state
+        return state
 
-		
+    def WidgetList(self) -> dict[str, list[str]]:
+        ''' Return a dict of {widget: chan} from all widgets in the UI '''
+        widgets = {}
+        multi_chan = {
+            'colorpicker': ['r', 'g', 'b'],
+            'xypad': ['x', 'y']
+        }
+        for view in self._view_list.col('name', val=True)[1:]:
+            config_table = opex(view + '/config_table')
+            for r in range(1, config_table.numRows):
+                panel = getCellVal(config_table, r, 'panel')
+                widget_name = f'{view}/{panel}'
+                chan = getCellVal(config_table, r, "channel")
+                widget_type = getCellVal(config_table, r, 'type')
+                chans = []
+                if chan == '' or widget_type == '':
+                    continue
+                if widget_type in multi_chan.keys():
+                    for suffix in multi_chan[widget_type]:
+                        sub_channel = f'{chan}/{suffix}'
+                        chans.append(sub_channel)
+                else:
+                    chans.append(chan)
+                widgets[widget_name] = chans
+        return widgets
 
 
-	# def onDestroyTD(self):
-	# 	"""
-	# 	Called when the extension or component is being deleted. Use this
-	# 	instead of __del__ for cleanup tasks.
-	# 	"""
-	# 	debug("onDestroyTD called")
 
-	# def onInitTD(self):
-	# 	"""
-	# 	Called after the extension is fully initialized and attached to the 
-	# 	component. Use this instead of __init__ for tasks that require other
-	# 	components' extensions to be available, or that use promoted members.
-	# 	"""
-	# 	debug("onInitTD called")
+
+
+    # def onDestroyTD(self):
+    # 	"""
+    # 	Called when the extension or component is being deleted. Use this
+    # 	instead of __del__ for cleanup tasks.
+    # 	"""
+    # 	debug("onDestroyTD called")
+
+    # def onInitTD(self):
+    # 	"""
+    # 	Called after the extension is fully initialized and attached to the 
+    # 	component. Use this instead of __init__ for tasks that require other
+    # 	components' extensions to be available, or that use promoted members.
+    # 	"""
+    # 	debug("onInitTD called")
