@@ -48,7 +48,7 @@ class WebUI:
         Safe to access sub-extension references here.
         """
         self._registerWebuiHandler()
-        self._host_config()
+        #self._host_config()
         self.Stream.CloseConnection()
         run(self.WebServer.RefreshPage, delayFrames=60*3)
 
