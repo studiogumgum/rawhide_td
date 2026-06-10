@@ -1,0 +1,1567 @@
+﻿:root {
+  /* ── colours ── */
+  --bg: #0a0a0c;
+  --bg2: #111116;
+  --bg3: #18181f;
+  --bg4: #1f1f2a;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8e8f0;
+  --text2: #b8b8cc;
+  --text3: #888899;
+  --accent: #7c6af5;
+  --accent2: #a599ff;
+  --accent-glow: rgba(124,106,245,0.25);
+  --green: #2dba78;
+  --red: #e05454;
+  --amber: #e0943a;
+  --darkgrey: #222;
+
+  /* ── fonts ── */
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Space Grotesk', sans-serif;
+
+  /* ── font sizes — overridable via theme ── */
+  --fs-header: 24px;
+  --fs-label: 13px;   /* widget labels: slider, vfader, xypad */
+  --fs-value: 10px;   /* value readouts below widgets */
+  --fs-ui:    11px;   /* buttons, view tabs, preset bar */
+  --fs-micro: 9px;    /* status bar, pills, panel headers, log */
+  --fs-panellabel: 20px;    
+
+  /* ── geometry ── */
+  --radius: 6px;
+  --radius2: 10px;
+  --topbar-height: 44px;
+  --footer-height: 44px;
+  --preset-bar-height: 36px;
+  --view-bar-height: 45px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: var(--fs-label);
+  min-height: 100vh;
+  /* overflow-x: hidden; */
+}
+
+/* ── TOP BAR ────────────────────────────────────────────── */
+
+#topbar {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: var(--topbar-height);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  overflow: visible;
+}
+
+.img-wrapper{
+  height: 100%;
+  min-width: 0;;
+}
+
+.logo {
+  /* grid-column: 1; */
+  font-family: var(--mono);
+  font-size: var(--fs-header);
+  letter-spacing: 0.15em;
+  color: var(--text);
+  text-transform: uppercase;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.logo-image {
+  flex: 1;
+  height: 100%;
+  width: auto;
+  max-height: 100%;
+  padding: 1px;
+  object-fit: contain;
+}
+
+.topbar-left {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  min-width: 0;
+  width: auto;
+  height: inherit;
+  gap: 10px;
+}
+.topbar-right {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  min-width: 0;
+  gap: 10px;
+}
+
+.spacer { flex: 1; min-width: 0; }
+
+.pill-label {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-right: 2px;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text2);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text3);
+  transition: background 0.3s;
+  flex-shrink: 0;
+}
+.status-dot.connected  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.error      { background: var(--red); }
+.status-dot.connecting { background: var(--amber); }
+
+#ws-url-input {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  padding: 4px 8px;
+  /* fluid width — takes available space, never overflows */
+  width: clamp(100px, 20vw, 220px);
+  min-width: 0;
+  outline: none;
+  flex-shrink: 1;
+}
+#ws-url-input:focus { border-color: var(--accent); color: var(--text); }
+
+/* hide url input label text on very narrow screens */
+@media (max-width: 500px) {
+  #ws-url-input { display: none; }
+  .logo { display: none; }
+}
+
+/* ── PRESET BAR ─────────────────────────────────────────── */
+
+#preset-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 36px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+
+@media (max-height: 800px) {
+ #preset-bar {
+   display: none;
+ }
+}
+.preset-label {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+#preset-select {
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  padding: 3px 6px;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  max-width: 180px;
+  cursor: pointer;
+}
+#preset-select:focus { border-color: var(--accent); }
+#preset-select option { background: var(--bg4); }
+
+.preset-btn {
+  flex: none;
+  padding: 4px 10px;
+  font-size: var(--fs-value);
+  white-space: nowrap;
+}
+
+.preset-fade {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.preset-fade input[type="range"] {
+  width: 80px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.preset-fade-value {
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text2);
+  min-width: 30px;
+}
+
+/* account for preset bar height in app layout */
+#app {
+/* app height already accounts for preset bar via --preset-bar-height variable */
+}
+
+@media (max-width: 768px) {
+  .preset-fade { display: none; }
+}
+/* --- FOOTER -----------------------------------------------*/
+
+#footer {
+  grid-row: 3 / 4;
+  grid-column: 1 / -1;
+  align-items: center;
+  margin-top: 10px;
+  justify-items: right;
+  padding: 0 12px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  z-index: 500;
+  overflow: visible;
+}
+
+.logo_image {
+  display: block;
+  max-height: 100%;
+  padding: 1px;
+}
+
+
+/* ── MAIN LAYOUT ────────────────────────────────────────── */
+
+#app {
+  display: grid;
+  /* controls | video — no side view bar anymore */
+  grid-template-columns: 1fr 35%;
+  grid-template-rows: 1fr;
+  height: calc(100vh - var(--topbar-height) - var(--preset-bar-height) - var(--view-bar-height));
+}
+
+@media (max-width: 1340px) {
+  #app {
+    grid-template-columns: 1fr 25%;
+    grid-template-rows: 1fr;
+    height: calc(100vh - var(--topbar-height));
+    min-height: calc(100vh - var(--topbar-height) - var(--view-bar-height)); 
+  }
+}
+
+/* ── CONTROLS AREA ──────────────────────────────────────── */
+
+#controls-area {
+  padding: 6px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
+  /* span the full grid height independently of the video panel */
+  grid-column: 1 / 2;
+  grid-row: 1 / -1;
+}
+
+@media (max-width: 1340px) {
+  #controls-area {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    overflow-y: visible;
+    height: auto;
+  }
+}
+
+/* ── LAYOUT GRID (rows and columns inside controls area) ── */
+
+.layout-row {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.layout-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  /* flex value is set inline from col_flex */
+}
+
+/* ── VIEW BAR — horizontal tab strip above controls ─────── */
+
+#view-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 0 6px;
+  height: var(--view-bar-height);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* spans controls column only */
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  flex-shrink: 0;
+}
+
+/* shift #app grid to make room — view bar sits above in a new row */
+#app {
+  grid-template-rows: var(--view-bar-height) auto var(--footer-height);
+}
+
+#controls-area {
+  grid-row: 2 / 3;
+}
+
+#video-panel {
+  grid-row: 1 / -1;
+  grid-column: 2 / 2;
+}
+
+
+.view-btn {
+  font-family: var(--sans);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text3);
+  cursor: pointer;
+  padding: 10px 20px;
+  /* tab shape — rounded top corners only, open bottom */
+  border-radius: var(--radius) var(--radius) 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  user-select: none;
+  position: relative;
+  bottom: -1px; /* overlap the border-bottom of the bar */
+  background: var(--bg2);
+}
+
+.view-btn:hover {
+  color: var(--text);
+  background: var(--bg3);
+  border-color: var(--border2);
+}
+
+.view-btn.active {
+  color: var(--text);
+  background: var(--bg2);
+  border-color: var(--border2);
+  /* active tab merges with content below */
+  border-bottom-color: var(--bg2);
+}
+
+/* ── VIDEO PANEL ────────────────────────────────────────── */
+
+#video-panel {
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  grid-column: 2 / 2;
+  grid-row: 1 / 3;
+}
+
+@media (max-width: 768px) {
+  #video-panel {
+    grid-column: 2 / 2;
+    grid-row: 1 / 2;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    height: auto;
+  }
+}
+@media (max-width: 1340px) {
+  #video-panel {
+    grid-column: 2 / 2;
+    grid-row: 1 / 3;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    height: auto;
+  }
+}
+
+.video-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+  flex-shrink: 0;
+}
+
+.video-label {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+#texture-select {
+  font-size: var(--fs-ui) !important;
+}
+
+#video-container {
+  position: relative;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  /* constrain to square — max-height matches the column width range */
+  max-height: clamp(300px, 35vw, 480px);
+}
+
+@media (max-width: 1341px) {
+  #video-container {
+    flex: none;
+    aspect-ratio: 1 / 1;
+  }
+}
+@media (max-width: 768px) {
+  #video-container {
+    flex: none;
+    aspect-ratio: 1 / 1;
+  }
+}
+
+#video-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#video-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+#video-placeholder.hidden { opacity: 0; }
+
+.placeholder-text {
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text3);
+}
+
+/* ── PANELS ─────────────────────────────────────────────── */
+
+.panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 350px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+}
+
+.panel-label {
+  font-family: var(--mono);
+  font-size: var(--fs-panellabel);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+.panel-body {
+  padding: 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  align-items: stretch;
+}
+
+.panel-body--column {
+  flex-direction: column;
+}
+
+.widget-cell {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  box-sizing: border-box;
+  background: var(--bg3);
+  border-radius: var(--radius);
+}
+
+/* ── BUTTONS ────────────────────────────────────────────── */
+
+.btn-row { display: flex; gap: 6px; }
+
+.btn {
+  flex: 1;
+  padding: 6px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: var(--bg4);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  text-align: center;
+  user-select: none;
+  white-space: nowrap;
+}
+.btn:hover  { background: var(--bg3); color: var(--text); }
+.btn.active { background: var(--accent-glow); color: var(--text2); border-color: var(--border); }
+.btn.danger { border-color: rgba(224,84,84,0.4); color: var(--red); }
+.btn.danger:hover { background: rgba(224,84,84,0.15); }
+
+
+/* ── Help Overlay ────────────────────────────────────────── */
+
+#help-overlay-btn {
+  color: var(--text2);
+  background: var(--bg2);
+}
+#help-overlay-btn.help-overlay-active {
+  border: 1px solid var(--accent);
+  color: var(--text);
+}
+body.help-overlay-active #controls-area {
+  opacity: 0.6;
+  pointer-events: none;
+}
+ 
+body.help-overlay-active [data-channel] {
+  pointer-events: auto;
+  cursor: help;
+}
+ 
+#help-overlay-modal {
+  position: fixed;
+  z-index: 2000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg2);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius2);
+  padding: 20px 24px;
+  box-shadow: 0 0 0 4px var(--accent-glow), 0 16px 48px rgba(0,0,0,0.6);
+  max-width: min(340px, 90vw);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+}
+ 
+.help-overlay-desc {
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.5;
+}
+ 
+.help-overlay-channel {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  color: var(--text3);
+  letter-spacing: 0.08em;
+}
+ 
+.help-overlay-midi {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  color: var(--amber);
+  letter-spacing: 0.08em;
+}
+
+/* ── SETTINGS DROPDOWN ──────────────────────────────────── */
+
+#settings-wrap {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 300;
+}
+
+#settings-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 220px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  padding: 8px;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  flex-direction: column;
+  gap: 6px;
+}
+
+#settings-menu.open {
+  display: flex;
+}
+
+.settings-section-label {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 2px 0;
+}
+
+.settings-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-action-btn {
+  width: 100%;
+  text-align: center;
+}
+
+.settings-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+#settings-menu #ws-url-input {
+  width: 100%;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  padding: 5px 8px;
+  outline: none;
+}
+
+#settings-menu #ws-url-input:focus {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+#settings-btn.open {
+  background: var(--accent-glow);
+  color: var(--accent2);
+  border-color: var(--accent);
+}
+
+/* ── LOG ────────────────────────────────────────────────── */
+
+#log {
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text3);
+  padding: 8px 12px;
+  height: stretch;
+  overflow-y: auto;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+#log { transition: none; }
+#log[style*="display: none"] + #status-bar {
+  border-top: 1px solid var(--border);
+}
+#log .entry      { margin-bottom: 2px; line-height: 1.4; }
+#log .entry.tx   { color: var(--accent); }
+#log .entry.rx   { color: var(--green); }
+#log .entry.err  { color: var(--red); }
+#log .entry.rtc  { color: var(--amber); }
+#log .entry.info { color: var(--text3); }
+
+
+/* ── QUICK ACCESS ───────────────────────────────────────── */
+ 
+#log-and-quick {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+ 
+#quick-access {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+}
+ 
+/* log sits in same space — one is visible at a time */
+#quick-access.hidden,
+#log.hidden {
+  display: none;
+}
+/* ── STATUS BAR ─────────────────────────────────────────── */
+
+#status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 4px;
+  height: 28px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 4px;
+  border-right: 1px solid var(--border);
+  height: 100%;
+}
+
+.stat:first-child { padding-left: 0; }
+.stat:last-child  { border-right: none; }
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+.stat-value {
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text2);
+  min-width: 32px;
+  text-align: right;
+  padding: 0 8px;
+}
+
+/* colour shifts based on load level */
+.stat-value.warn { color: var(--amber); }
+.stat-value.crit { color: var(--red); }
+
+/* ── SCROLLBAR ──────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+/* ══════════════════════════════════════════════════════════
+   WIDGETS
+══════════════════════════════════════════════════════════ */
+
+/* ── WIDGET TOOLTIP ─────────────────────────────────────── */
+
+#widget-tooltip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  opacity: 0;
+  transition: opacity 0.12s;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  width: 220px;
+}
+
+#widget-tooltip.visible {
+  opacity: 1;
+}
+
+/* ── EXECUTOR ───────────────────────────────────────────── */
+ 
+td-executor {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  user-select: none;
+  touch-action: none;
+}
+ 
+.executor-fader {
+  flex: 3;           /* 75% of height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 0;
+}
+ 
+.executor-btns {
+  flex: 1;           /* 25% of height */
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-left: 20%;
+  padding-right: 20%;
+  padding-top: 12px;
+  gap: 5px 0px;
+}
+ 
+.executor-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg4);
+  color: var(--text3);
+  cursor: pointer;
+  transition: background 0.08s, color 0.08s;
+  min-height: 0;
+}
+ 
+.executor-btn:hover {
+  background: var(--bg3);
+  color: var(--text2);
+}
+ 
+.executor-btn.pressed {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text);
+}
+ 
+/* distinct colours for each button */
+.executor-btn--black.pressed  { background: var(--darkgrey); border-color: #444; }
+.executor-btn--flash.pressed  { background: var(--accent); border-color: var(--accent); }
+.executor-btn--solo.pressed   { background: var(--amber);  border-color: var(--amber);  color: #000; }
+/* ── TOGGLE SWITCH ──────────────────────────────────────── */
+
+td-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.toggle-track {
+  width: 28px;
+  flex: 1;
+  min-height: 48px;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  position: relative;
+  transition: border-color 0.15s;
+}
+
+td-toggle.on .toggle-track {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.toggle-handle {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  height: 40%;
+  border-radius: 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  transition: top 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.15s,
+              border-color 0.15s;
+  /* off position — bottom */
+  top: calc(57% );
+}
+
+td-toggle.on .toggle-handle {
+  /* on position — top */
+  top: 3px;
+  background: var(--text);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+
+ 
+/* ── TOUCH HANDLING ─────────────────────────────────────── */
+ 
+/* prevent browser scroll/zoom from intercepting pointer events
+   on draggable widgets — required for pointer capture to work */
+td-knob, td-slider, td-vfader, td-vxfader, td-xypad, td-hspicker, td-executor{
+  touch-action: none;
+}
+ 
+/* ── RADIO GROUP ────────────────────────────────────────── */
+
+td-radio {
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  touch-action: none;
+  width: 100%;
+  min-width: 0;
+}
+
+.radio-row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: stretch;
+  gap: 0;
+}
+
+.radio-btn {
+  display: flex;
+  container-type: inline-size;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  height: stretch;
+  padding: 6px 4px;
+  background: var(--bg4);
+  border: 3px solid var(--border);
+  border-right: none;
+  color: var(--text3);
+  /*font-size: var(--fs-ui);*/
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+  /* no border-radius by default — inner buttons stay square */
+}
+
+.radio-btn-label {
+  flex: 1;
+  min-width: 0;
+  height: stretch;
+  align-content: center;
+  align-items: center;
+  font-size: clamp(1rem, 15cqmin, 4rem);
+  font-family: var(--mono);
+  color: var(--text2);
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* restore right border on last button */
+.radio-btn.radio-last {
+  border-right: 1px solid var(--border);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.radio-btn.radio-first {
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+/* single button — round all corners */
+.radio-btn.radio-first.radio-last {
+  border-radius: var(--radius);
+  border-right: 1px solid var(--border);
+}
+
+.radio-btn:hover {
+  background: var(--bg3);
+  color: var(--text2);
+}
+
+.radio-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* adjacent button to active — show its left border */
+.radio-btn.active + .radio-btn {
+  border-left: 1px solid var(--border);
+}
+
+/* ── TOUCH HANDLING ─────────────────────────────────────── */
+
+/* prevent browser scroll/zoom from intercepting pointer events
+   on draggable widgets — required for pointer capture to work */
+td-knob, td-slider, td-vfader, td-vxfader, td-xypad, td-hspicker {
+  touch-action: none;
+}
+
+/* ── FLUID WIDGET BASE ───────────────────────────────────── */
+
+td-knob, td-slider, td-vfader, td-vxfader, td-xypad, td-hspicker, td-button, td-executor{
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+td-knob svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pad-surface {
+  width: 100%;
+  /* aspect-ratio keeps pad square while filling available width */
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  /* max-width set inline from cfg if provided */
+}
+
+.hsp-surface {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.hsp-surface canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.hsp-swatch { 
+  width: 100%; 
+}
+
+.vfader-track {
+  flex: 1;
+  width: 90%;
+  min-height: 0;
+}
+
+
+
+
+/* ── VALUE VISIBILITY TOGGLE ────────────────────────────── */
+
+.hide-values .knob-value,
+.hide-values .slider-value,
+.hide-values .vfader-value,
+.hide-values .pad-val-x,
+.hide-values .pad-val-y,
+.hide-values .pad-vals,
+.hide-values .hsp-vals { display: none; }
+
+/* ── KNOB ───────────────────────────────────────────────── */
+
+td-knob {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: ns-resize;
+  user-select: none;
+}
+/* knob label is now rendered as SVG text inside the arc */
+/* .knob-label-svg styles are set inline in createKnob() */
+td-knob .knob-value {
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text);
+  text-align: center;
+  min-width: 36px;
+}
+
+/* ── SLIDER — styled like vfader, horizontal orientation ── */
+
+td-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  user-select: none;
+  min-width: 0;
+  align-items: center;
+}
+td-slider .slider-label {
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.04em;
+  color: var(--text2);
+  text-transform: uppercase;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+td-slider .slider-value {
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text2);
+  text-align: center;
+  width: 100%;
+}
+td-slider .track {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+}
+td-slider .fill {
+  background: var(--accent);
+  border-radius: 2px;
+  position: absolute;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+td-slider .thumb {
+  width: 14px;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--text);
+  border: 2px solid var(--accent);
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  cursor: grab;
+  transition: box-shadow 0.1s;
+}
+td-slider .thumb:active {
+  cursor: grabbing;
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+/* ── BUTTON / TOGGLE / BANG ─────────────────────────────── */
+
+td-button {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  user-select: none;
+  border: 4px solid #1f1f2a;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+td-button .btn-inner {
+  padding: 6px 4px;
+  border-radius: 0;
+  border: none;
+  background: var(--bg4);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: var(--fs-ui);
+  letter-spacing: 0.06em;
+  text-align: center;
+  transition: all 0.12s;
+  white-space: normal;
+  word-break: break-word;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+td-button:hover .btn-inner { background: var(--bg3); color: var(--text); }
+td-button.active .btn-inner,
+td-button[type="toggle"].on .btn-inner {
+  background: var(--accent-glow);
+  color: var(--accent2);
+  border-color: var(--accent);
+}
+td-button[type="bang"] .btn-inner {
+  border-color: rgba(224,148,58,0.4);
+  color: var(--amber);
+}
+td-button[type="bang"]:active .btn-inner {
+  background: rgba(224,148,58,0.2);
+  transform: scale(0.97);
+}
+
+/* ── XY PAD ─────────────────────────────────────────────── */
+
+td-xypad {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  user-select: none;
+  min-height: 0;
+}
+/* pad label centred inside the grid surface */
+td-xypad .pad-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--mono);
+  font-size: var(--fs-header);
+  letter-spacing: 0.04em;
+  color: var(--text2);
+  text-transform: uppercase;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* x value — centred at bottom inside grid */
+td-xypad .pad-val-x {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text3);
+  background: rgba(0,0,0,0.35);
+  padding: 1px 5px;
+  border-radius: 3px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* y value — rotated, centred on left inside grid */
+td-xypad .pad-val-y {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: center center;
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text3);
+  background: rgba(0,0,0,0.35);
+  padding: 1px 5px;
+  border-radius: 3px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+td-xypad .pad-surface {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+  cursor: crosshair;
+  overflow: hidden;
+}
+td-xypad .pad-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+td-xypad .pad-cursor {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent2);
+  border: 2px solid var(--accent);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 0 8px var(--accent-glow);
+  opacity: 75%;
+}
+
+td-xypad .pad-vals {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text3);
+}
+
+/* ── HS COLOR PICKER ─────────────────────────────────────── */
+
+td-hspicker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  user-select: none;
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+}
+td-hspicker .hsp-label {
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
+  color: var(--text2);
+  text-transform: uppercase;
+}
+td-hspicker .hsp-surface {
+  position: relative;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: crosshair;
+  aspect-ratio: 1 / 1;
+}
+td-hspicker canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+td-hspicker .hsp-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+td-hspicker .hsp-cursor {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 0 6px rgba(0,0,0,0.3);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+td-hspicker .hsp-vals {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: var(--fs-value);
+  color: var(--text2);
+}
+td-hspicker .hsp-swatch {
+  height: 5%;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+
+
+
+/* ── VERTICAL FADER ─────────────────────────────────────── */
+
+td-vfader, td-vxfader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  user-select: none;
+  min-height: 0;
+}
+
+.vfader-label {
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.04em;
+  color: var(--text2);
+  text-transform: uppercase;
+  text-align: center;
+  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.vfader-value {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  color: var(--text2);
+  text-align: center;
+}
+
+.vfader-track {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+  justify-items: center;
+  /* fills remaining height in column panel cell */
+  flex: 1;
+  min-height: 0;
+  /* width can be constrained by cfg.width via maxWidth inline */
+  /*width: 120px;*/
+}
+
+.vfader-fill {
+  background: var(--accent);
+  border-radius: 2px;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  /*left: 0;*/
+}
+
+.vfader-thumb {
+  width: 100%;
+  height: 14px;
+  background: var(--text);
+  border: 2px solid var(--accent);
+  border-radius: 3px;
+  position: absolute;
+  /*left: 0;*/
+  /* bottom set inline */
+  cursor: grab;
+  transition: box-shadow 0.1s;
+}
+.vfader-thumb:active {
+  cursor: grabbing;
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+/* crossfader center line */
+.vfader-center {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--border2);
+  pointer-events: none;
+}
+td-vxfader .vfader-center {
+  background: var(--accent);
+  opacity: 0.4;
+}
+
+/* ── MIDI INDICATORS ─────────────────────────────────────── */
+
+/* dot on label text for all non-knob widgets */
+.midi-mapped {
+  color: var(--amber);
+}
+
+.midi-mapped::after {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--amber);
+  margin-left: 4px;
+  vertical-align: middle;
+  box-shadow: 0 0 4px var(--amber);
+  flex-shrink: 0;
+}
+
+/* knob midi indicator — dot positioned over the SVG since
+   SVG text elements don't support CSS ::after */
+td-knob.midi-mapped {
+  position: relative;
+}
+
+td-knob.midi-mapped::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 4px var(--amber);
+  pointer-events: none;
+}
+
+/* ── MIDI LEARN ─────────────────────────────────────────── */
+
+.midi-learn-armed {
+  box-shadow: 0 0 0 2px var(--amber), 0 0 8px var(--amber);
+  border-radius: var(--radius);
+}
+
