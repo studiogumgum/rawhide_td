@@ -923,6 +923,7 @@ td-executor {
 .executor-btn--black.pressed  { background: var(--darkgrey); border-color: #444; }
 .executor-btn--flash.pressed  { background: var(--accent); border-color: var(--accent); }
 .executor-btn--solo.pressed   { background: var(--amber);  border-color: var(--amber);  color: #000; }
+
 /* ── TOGGLE SWITCH ──────────────────────────────────────── */
 
 td-toggle {
@@ -1268,6 +1269,54 @@ td-button[type="bang"]:active .btn-inner {
   transform: scale(0.97);
 }
 
+/* ── COLOR GRID ─────────────────────────────────────────── */
+ 
+td-colorgrid {
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  user-select: none;
+  touch-action: none;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+ 
+.colorgrid-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+ 
+.colorgrid-swatch {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  cursor: pointer;
+  min-width: 0;
+  min-height: 0;
+  transition: border-color 0.1s, transform 0.06s;
+}
+ 
+.colorgrid-swatch:hover {
+  border-color: var(--border2);
+}
+ 
+.colorgrid-swatch.active {
+  border-color: var(--text);
+  box-shadow: 0 0 0 2px var(--accent), 0 0 8px var(--accent-glow);
+}
+ 
+.colorgrid-swatch:active {
+  transform: scale(0.94);
+}
 /* ── XY PAD ─────────────────────────────────────────────── */
 
 td-xypad {

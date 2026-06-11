@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSKER - RAWHIDE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div id="topbar">
+  <div class="topbar-left">
+  <span class="logo">BUSKER -</span>
+  <div class="img-wrapper">
+  <img src="/assets/rawhide_logo.png" class="logo-image"><img>
+  </div>
+  </div>
+  <!-- <div class="spacer"></div> --!>
+  <div class="topbar-right">
+    <div class="status-pill"><span class="pill-label">TD</span><div class="status-dot" id="ws-dot"></div><span id="ws-status-text">disconnected</span></div>
+    <div class="status-pill"><span class="pill-label">stream</span><div class="status-dot" id="rtc-dot"></div><span id="rtc-status-text">no video</span></div>
+
+    <!-- settings dropdown -->
+    <div id="settings-wrap">
+      <div class="btn" id="settings-btn" style="flex:none;"><span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle;margin-right:4px;">settings</span>settings <span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle;margin-left:2px;" id="settings-arrow">expand_more</span></div>
+      <div id="settings-menu">
+        <div class="settings-section-label">websocket</div>
+        <div class="settings-row">
+          <input id="ws-url-input" type="text" value="ws://localhost:9980">
+        </div>
+        <div class="settings-row">
+          <div class="btn settings-action-btn" id="ws-connect-btn">connect</div>
+        </div>
+        <div class="settings-divider"></div>
+        <div class="settings-section-label">display</div>
+        <div class="settings-row">
+          <div class="btn settings-action-btn" id="values-btn">hide values</div>
+        </div>
+        <div class="settings-row">
+          <div class="btn settings-action-btn" id="log-toggle-btn">hide log</div>
+        </div>
+        <div class="settings-row">
+          <div class="btn settings-action-btn" id="tooltip-toggle-btn">enable hover tips</div>
+        </div>
+        <div class="settings-divider"></div>
+        <div class="settings-section-label">stream</div>
+        <div class="settings-row">
+          <div class="btn settings-action-btn" id="rtc-start-btn">start stream</div>
+          <div class="btn settings-action-btn danger" id="rtc-stop-btn">stop stream</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn" id="help-overlay-btn" style="display:none;flex:none;">help overlay</div>
+    <div class="btn" id="fullscreen-btn" style="flex:none;width:40px;" title="fullscreen"><span class="material-symbols-rounded" id="fullscreen-icon" style="font-size:20px;vertical-align:middle;letter-spacing:0;">fullscreen</span></div>
+  </div>
+</div>
+
+<div id="app">
+  <!-- view bar — horizontal tab strip, spans controls column -->
+  <div id="view-bar"></div>
+  <div id="controls-area"></div>
+
+  <div id="video-panel">
+    <div class="video-header">
+      <span class="video-label">TEXTURE PREVIEW</span>
+    </div>
+      <div class = "texture-select" id="video-texture-select">
+        <!-- radio button created here in app.js -->
+      </div>
+    <div id="video-container">
+      <video id="video-feed" autoplay playsinline muted></video>
+      <div id="video-placeholder">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <rect x="4" y="10" width="40" height="28" rx="3" stroke="#555566" stroke-width="1.5"/>
+          <path d="M20 18L32 24L20 30V18Z" fill="#555566"/>
+        </svg>
+        <span class="placeholder-text">connect ws, then start stream</span>
+      </div>
+    </div>
+    <div id='log-and-quick'>
+      <div id="quick-access"></div>
+      <div id="log"><div class="entry info">// td-ctrl ready</div></div>
+    </div>
+<div id="status-bar">
+  <span class="stat" id="stat-fps"><span class="stat-label">fps</span><span class="stat-value" id="val-fps">--</span></span>
+  <span class="stat" id="stat-ram"><span class="stat-label">ram</span><span class="stat-value" id="val-ram">--%</span></span>
+  <span class="stat" id="stat-vram"><span class="stat-label">vram</span><span class="stat-value" id="val-vram">--%</span></span>
+  <span class="stat" id="stat-gpu"><span class="stat-label">gpu</span><span class="stat-value" id="val-gpu">--°c</span></span>
+</div>
+  </div>
+<div id="footer">
+  <img src="/assets/gumgum_logo.png" class="logo_image"></img>
+</div>
+</div>
+
+
+<script src="/core.js"></script>
+<script src="/widgets.js"></script>
+<script src="/app.js"></script>
+<script src="/midi.js"></script>
+<script src="/presets.js"></script>
+<div id="widget-tooltip"></div>
+</body>
+</html>

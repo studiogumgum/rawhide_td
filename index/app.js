@@ -543,7 +543,7 @@ fetch('/views')
     const textureSelect = document.getElementById('video-texture-select');
     if (textureSelect) {
       const widget = createRadio({
-        label: 'MAIN,GENERATORS,FX,PREVIEW',
+        label: 'MAIN,GENERATORS,PREVIEW',
         channel: 'ui/view/viewindex',
         default: 0
       });
